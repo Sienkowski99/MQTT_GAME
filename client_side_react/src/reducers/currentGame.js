@@ -5,6 +5,10 @@ const currentGameReducer = (state = {}, action) => {
             return {state: "watching", game: action.payload}
         case 'JOIN_GAME':
             return {state: "playing", game: action.payload}
+        case 'LEAVE_GAME':
+            return {}
+        case 'UPDATE_GAME':
+            return {...state, game: action.payload}
         default:
             return state
     }
