@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(cors())
 
 let games = []
+let games_list = []
 
 class Game {
     constructor () {
@@ -67,6 +68,44 @@ const checkWhoWon = (board, char) => {
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+const mqtt = require('mqtt')
+const client  = mqtt.connect('mqtt://10.45.3.171/')
+
+client.on('connect', function () {
+    client.subscribe('games_list', function (err) {
+        if (err) {
+            console.log('error' + err)
+        }
+    })
+})
+
+client.on('message', function (topic, message) {
+    let x = message.toString()
+    // console.log(JSON.parse(x))
+    console.log(topic);
+    if (topic === "games_list") {
+        // games_list=message.toString().split(",")
+        console.log(games_list)
+    }
+})
+
+app.get('/make_new', (req, res) => {
+    
+    const payload = {
+        game_id: 1,
+        players: ["abc", "def"],
+        etc: {
+            elo: "eluwina"
+        }
+    }
+    games_list.push(payload)
+    console.log(games_list)
+    client.publish("games_list", "sdmoe")
+    
+
+    res.send('new game!')
+  })
 
 app.get('/games_list', (req, res) => {
     console.log(games)
