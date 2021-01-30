@@ -18,10 +18,6 @@ const Chat = (props) => {
         }
     }, [props])
 
-    useEffect(()=>{
-        mqttConnect('ws://10.45.3.171:8000/mqtt')
-    }, [])
-
     const [message, setMessage] = useState("")
     const handleSendMessage = (e) => {
         e.preventDefault()
@@ -33,6 +29,10 @@ const Chat = (props) => {
     const [connectStatus, setConnectStatus] = useState(null)
     const [chat, setChat] = useState([])
 
+    useEffect(()=>{
+        mqttConnect('ws://10.45.3.171:8000/mqtt')
+    }, [])
+    
     const mqttConnect = (host) => {
         setClient(mqtt.connect(host));
     };
@@ -72,8 +72,6 @@ const Chat = (props) => {
         });
     }
     }
-
-    useEffect(() => {console.log(chat)}, [chat])
 
     useEffect(() => {
         if (client) {

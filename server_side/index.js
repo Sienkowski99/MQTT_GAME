@@ -76,7 +76,7 @@ let games_list = {
 }
 
 const gamesListPublishInterval = setInterval(()=>{
-    console.log(games_list)
+    // console.log(games_list)
     client.publish("games_list", JSON.stringify(games_list))
 },100)
 
@@ -124,12 +124,12 @@ app.get('/make_new', (req, res) => {
 })
 
 // let messages = []
-app.get('/send_msg', (req, res) => {
-    // console.log(req.body);
-    // messages.push({author: "anon", content: "WLO", id: uuidv4()})
-    client.publish("/chat/general", "eloo")
-    res.send("OK")
-})
+// app.get('/send_msg', (req, res) => {
+//     // console.log(req.body);
+//     // messages.push({author: "anon", content: "WLO", id: uuidv4()})
+//     client.publish("/chat/general", "eloo")
+//     res.send("OK")
+// })
 
 // app.get('/chat/general', (req, res) => {
 //     console.log("MESSAGES");
