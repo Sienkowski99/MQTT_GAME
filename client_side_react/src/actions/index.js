@@ -4,6 +4,12 @@ export const JOIN_GAME = "JOIN_GAME"
 export const LEAVE_GAME = "LEAVE_GAME"
 export const UPDATE_GAME = "UPDATE_GAME"
 export const LOGIN = "LOGIN"
+export const SET_COMMENTS = 'SET_COMMENTS'
+
+export const set_comments = (data) => ({
+    type: SET_COMMENTS,
+    payload: data
+})
 
 export const setGamesList = (list) => ({
     type: SET_GAMES_LIST,

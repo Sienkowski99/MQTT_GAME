@@ -7,7 +7,7 @@ const {v4: uuidv4} = require('uuid')
 const GamesList = (props) => {
 
     const delay = 1000
-    console.log(props.currentGame)
+    // console.log(props.currentGame)
     //componentDidMount
     useEffect(()=>{
     setInterval(()=>{
@@ -34,7 +34,7 @@ const GamesList = (props) => {
     }
 
     const gameID = (id) => {
-        console.log(props)
+        // console.log(props)
         if (props.currentGame.game) {
             if (props.currentGame.game.id === id) {
                 return <p style={{color: "orange"}}>{id}</p>

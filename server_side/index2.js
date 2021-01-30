@@ -8,7 +8,12 @@ app.use(express.json());
 app.use(cors())
 
 const mqtt = require('mqtt')
-const client  = mqtt.connect('mqtt://10.45.3.171/')
+const client  = mqtt.connect('mqtt://10.45.3.171/'
+// , {
+//     clean: false,
+//     clientId: uuidv4()
+// }
+)
 
 client.on('connect', function () {
     client.subscribe('games_list', function (err) {
@@ -16,18 +21,24 @@ client.on('connect', function () {
             console.log('error' + err)
         }
     })
-    const payload = {
-        game_id: 1,
-        players: ["abc", "def"],
-        etc: {
-            elo: "eluwina"
+    client.subscribe('/chat/general', function (err) {
+        if (err) {
+            console.log('error' + err)
         }
-    }
-    setTimeout(()=>{client.publish("games", JSON.stringify(payload))}, 5000)
+    })
+    // const payload = {
+    //     game_id: 1,
+    //     players: ["abc", "def"],
+    //     etc: {
+    //         elo: "eluwina"
+    //     }
+    // }
+    // setTimeout(()=>{client.publish("games", JSON.stringify(payload))}, 5000)
 })
 
 client.on('message', function (topic, message) {
     let x = message.toString()
-    console.log(JSON.parse(x))
     console.log(topic);
+    // console.log(JSON.parse(x))
+    console.log(x);
 })

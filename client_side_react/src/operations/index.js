@@ -1,12 +1,12 @@
 import axios from 'axios'
-import {setGamesList, watchGame, joinGame, leaveGame, logIN, updateGame} from "../actions"
+import {setGamesList, watchGame, joinGame, leaveGame, logIN, updateGame, set_comments} from "../actions"
 
 const delay = 1000
 
 const update_games_list = () => async dispatch => {
     const new_list = await axios.get("http://localhost:8080/games_list")
     .then(result => {
-        console.log(result);
+        // console.log(result);
         return result.data
     })
     .catch(err => {console.log(err)})
@@ -87,6 +87,23 @@ const move = (login, index, id) => async dispatch => {
     
 }
 
+const turnOnChat = () => async dispatch => {
+    setInterval(()=>{
+        axios.get(`http://localhost:8080/chat/general`)
+        .then((result)=>{
+            console.log(result)
+            dispatch(set_comments(result.data))
+        })
+        .catch(err=>console.log(err))
+    }, 333)
+}
+
+const send_message = (msg) => async dispatch => {
+    axios.post(`http://localhost:8080/send_msg`, {msg: msg})
+    .then(result=>console.log(result))
+    .catch(err=>console.log(err))
+}
+
 const operations = {
     update_games_list,
     watch_game,
@@ -94,7 +111,9 @@ const operations = {
     create_game,
     leave_game,
     login,
-    move
+    move,
+    send_message,
+    turnOnChat
 }
   
 export default operations

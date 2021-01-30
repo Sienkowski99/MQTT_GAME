@@ -8,7 +8,6 @@ app.use(express.json());
 app.use(cors())
 
 let games = []
-let games_list = []
 
 class Game {
     constructor () {
@@ -72,22 +71,39 @@ app.get('/', (req, res) => {
 const mqtt = require('mqtt')
 const client  = mqtt.connect('mqtt://10.45.3.171/')
 
+let games_list = {
+    games: []
+}
+
+const gamesListPublishInterval = setInterval(()=>{
+    console.log(games_list)
+    client.publish("games_list", JSON.stringify(games_list))
+},100)
+
 client.on('connect', function () {
+    client.subscribe('/chat/general', function (err) {
+        if (err) {
+            console.log('error' + err)
+        }
+    })
     client.subscribe('games_list', function (err) {
         if (err) {
             console.log('error' + err)
         }
     })
+    gamesListPublishInterval()
 })
 
 client.on('message', function (topic, message) {
     let x = message.toString()
     // console.log(JSON.parse(x))
     console.log(topic);
-    if (topic === "games_list") {
-        // games_list=message.toString().split(",")
-        console.log(games_list)
-    }
+    console.log(x);
+    
+    // if (topic === "games_list") {
+    //     // games_list=message.toString().split(",")
+    //     console.log(games_list)
+    // }
 })
 
 app.get('/make_new', (req, res) => {
@@ -101,11 +117,25 @@ app.get('/make_new', (req, res) => {
     }
     games_list.push(payload)
     console.log(games_list)
-    client.publish("games_list", "sdmoe")
-    
+    client.publish("games_list", JSON.stringify(payload))
+
 
     res.send('new game!')
-  })
+})
+
+// let messages = []
+app.get('/send_msg', (req, res) => {
+    // console.log(req.body);
+    // messages.push({author: "anon", content: "WLO", id: uuidv4()})
+    client.publish("/chat/general", "eloo")
+    res.send("OK")
+})
+
+// app.get('/chat/general', (req, res) => {
+//     console.log("MESSAGES");
+//     console.log(messages)
+//     res.send(messages)
+// })
 
 app.get('/games_list', (req, res) => {
     console.log(games)
@@ -194,6 +224,70 @@ app.post('/:id/make_move', (req, res) => {
         res.send("err")
     }
 })
+
+
+
+
+
+
+
+
+
+// client.on('connect', function () {
+//     client.subscribe('games_list', function (err) {
+//         if (err) {
+//             console.log('error' + err)
+//         }
+//     })
+// })
+
+// let games_list = []
+// const game = {
+//     id: uuidv4(),
+//     number_of_players_needed: 2,
+//     number_of_players_connected: 0,
+//     players: [],
+//     finished: false
+// }
+
+// client.on('message', function (topic, message) {
+//     let x = message.toString()
+//     // console.log(JSON.parse(x))
+//     console.log(topic);
+//     console.log(x);
+    
+//     if (topic === "games_list") {
+//         games_list = console.log(JSON.parse(x))
+//     }
+// })
+
+
+// app.post('/get_games_list', (req, res) => {
+
+// })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)

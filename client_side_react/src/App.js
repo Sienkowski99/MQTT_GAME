@@ -5,6 +5,7 @@ import GameBoard from "./components/GameBoard"
 import { connect } from "react-redux";
 import operations from './operations'
 import { useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App(props) {
 
@@ -17,7 +18,7 @@ function App(props) {
       props.login(login)
     }
   }
-
+  
   const isLogged = () => {
     if (props.player.login !== "") {
       return (

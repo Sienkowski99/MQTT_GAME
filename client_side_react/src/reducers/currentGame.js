@@ -1,5 +1,5 @@
 const currentGameReducer = (state = {}, action) => {
-    console.log(action.type)
+    // console.log(action.type)
     switch(action.type) {
         case 'WATCH_GAME':
             return {state: "watching", game: action.payload}
