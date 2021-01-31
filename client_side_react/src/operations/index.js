@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {setGamesList, watchGame, joinGame, leaveGame, logIN, updateGame, set_comments} from "../actions"
+import {setGamesList, watchGame, joinGame, leaveGame, logIN, updateGame, set_comments, set_data, addComment} from "../actions"
 
 const delay = 1000
 
@@ -13,13 +13,23 @@ const update_games_list = (newList) => async dispatch => {
     // console.log("UPDATE")
     dispatch(setGamesList(newList))
 }
-const set_game = (game) => async dispatch => {
+const set_game = (game) => async (dispatch, state) => {
+    const prev_chat = state().data.chat
     if (game) {
+        // dispatch(set_comments([]))
         dispatch(joinGame(game))
+        dispatch(set_data({chat: game.id, prev_chat: prev_chat}))
     } else {
+        // dispatch(set_comments([]))
         dispatch(leaveGame(game))
+        dispatch(set_data({chat: "general", prev_chat: prev_chat}))
     }
     
+}
+
+const add_comment = (obj) => async (dispatch) => {
+    console.log(obj)
+    dispatch(addComment(obj))
 }
 
 const watch_game = (id) => async dispatch => {
@@ -97,14 +107,18 @@ const move = (login, index, id) => async dispatch => {
 }
 
 const turnOnChat = () => async dispatch => {
-    setInterval(()=>{
-        axios.get(`http://localhost:8080/chat/general`)
-        .then((result)=>{
-            console.log(result)
-            dispatch(set_comments(result.data))
-        })
-        .catch(err=>console.log(err))
-    }, 333)
+    // setInterval(()=>{
+    //     axios.get(`http://localhost:8080/chat/general`)
+    //     .then((result)=>{
+    //         console.log(result)
+    //         dispatch(set_comments(result.data))
+    //     })
+    //     .catch(err=>console.log(err))
+    // }, 333)
+}
+
+const clearChat = () => async dispatch => {
+    dispatch(set_comments([]))
 }
 
 const send_message = (msg) => async dispatch => {
@@ -123,7 +137,9 @@ const operations = {
     move,
     send_message,
     turnOnChat,
-    set_game
+    set_game,
+    add_comment,
+    clearChat
 }
   
 export default operations

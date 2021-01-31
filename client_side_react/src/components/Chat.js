@@ -9,20 +9,34 @@ const mqtt = require('mqtt')
 
 const Chat = (props) => {
 
-    const [currentChat, SetCurrentChat] = useState(null)
+    const [currentChat, SetCurrentChat] = useState("general")
     useEffect(()=>{
-        if (props.chat_id !== undefined) {
-            SetCurrentChat(props.chat_id)
-        } else {
-            SetCurrentChat("general")
-        }
-    }, [props])
+      // console.log(props.currentGame)
+      if (props.data.prev_chat !== null) {
+        props.clearChat()
+        mqttUnSub(`/chat/${props.data.prev_chat}`)
+        mqttSub(`/chat/${props.data.chat}`)
+        SetCurrentChat(props.data.chat)
+      } else {
+        props.clearChat()
+        mqttSub(`/chat/${props.data.chat}`)
+        SetCurrentChat(props.data.chat)
+      }
+      // if (props.data.chat !== null && props.data.prev_chat !== null) {
+      //   SetCurrentChat(props.data.chat)
+      //   mqttUnSub(props.data.prev_chat)
+      //   mqttSub(props.data.chat)
+      // } else {
+      //     SetCurrentChat("general")
+      // }
+      
+    }, [props.data.chat])
 
     const [message, setMessage] = useState("")
     const handleSendMessage = (e) => {
         e.preventDefault()
-        console.log("sending: "+message)
-        mqttPublish({topic: "/chat/general", payload: message})
+        console.log("sending: "+message+"to: "+currentChat)
+        mqttPublish({topic: `/chat/${currentChat}`, payload: JSON.stringify({author: props.player.login, message: message})})
     }
     const [client, setClient] = useState(null);
     const [isSub, setIsSub] = useState(false);
@@ -39,6 +53,7 @@ const Chat = (props) => {
     };
 
     const mqttSub = (topic) => {
+      console.log("SUB FOR : "+topic);
         if (client) {
           client.subscribe(topic, (error) => {
             if (error) {
@@ -50,9 +65,9 @@ const Chat = (props) => {
         }
       };
 
-    const mqttUnSub = (subscription) => {
+    const mqttUnSub = (topic) => {
         if (client) {
-          const { topic } = subscription;
+          // const { topic } = subscription;
           client.unsubscribe(topic, error => {
             if (error) {
               console.log('Unsubscribe error', error)
@@ -92,11 +107,21 @@ const Chat = (props) => {
           client.on('message', (topic, message) => {
             const payload = { topic, message: message.toString() };
             console.log(payload)
-            if (topic === "/chat/general") {
-                console.log(chat)
-                setChat([...chat, {author: "anonim", content: message.toString()}])
-                chat.push({author: "anonim", content: message.toString()})
-                // console.log(chat)
+            let x = message.toString()
+            // if (topic === "/chat/general") {
+            //     // console.log(chat)
+            //     const req = JSON.parse(x)
+            //     // console.log(req)
+            //     setChat([...chat, {author: req.user, content: req.message}])
+            //     // chat.push({author: "anonim", content: message.toString()})
+            //     // console.log(chat)
+            // }
+            if (/\/chat\/(.*?)/.test(topic)) {
+              const req = JSON.parse(x)
+              console.log(chat)
+              props.addComment({author: req.author, content: req.message})
+              // setChat([...chat, {author: req.user, content: req.message}])
+              // chat.push({author: "anonim", content: message.toString()})
             }
             // setPayload(payload);
           });
@@ -104,8 +129,9 @@ const Chat = (props) => {
       }, [client]);
 
     useEffect(()=>{
-      setChatReverse(chat.reverse())
-    }, [chat])
+      console.log(props.chat)
+      setChatReverse(props.chat.reverse())
+    }, [props.chat])
     return (
         <div>
             <h2>Chat 🥇</h2>
@@ -139,13 +165,18 @@ const Chat = (props) => {
 function mapStateToProps(state) {
     return {
         chat: state.chat,
+        currentGame: state.currentGame,
+        data: state.data,
+        player: state.player
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         sendMessage: (msg) => dispatch(operations.send_message(msg)),
-        chatOn: () => dispatch(operations.turnOnChat())
+        chatOn: () => dispatch(operations.turnOnChat()),
+        addComment: (commentObject) => dispatch(operations.add_comment(commentObject)),
+        clearChat: () => dispatch(operations.clearChat())
     }
 }
 

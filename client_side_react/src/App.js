@@ -25,7 +25,7 @@ function App(props) {
         <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", alignItems: "self-start"}}>
           <GamesList/>
           {props.currentGame ? <GameBoard/> : null}
-          <Chat/>
+          <Chat user={props.player.login}/>
         </div>
       )
     } else {

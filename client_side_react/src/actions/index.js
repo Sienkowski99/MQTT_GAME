@@ -5,9 +5,16 @@ export const LEAVE_GAME = "LEAVE_GAME"
 export const UPDATE_GAME = "UPDATE_GAME"
 export const LOGIN = "LOGIN"
 export const SET_COMMENTS = 'SET_COMMENTS'
+export const SET_DATA = 'SET_DATA'
+export const ADD_COMMENT = "ADD_COMMENT"
 
 export const set_comments = (data) => ({
     type: SET_COMMENTS,
+    payload: data
+})
+
+export const set_data = (data) => ({
+    type: SET_DATA,
     payload: data
 })
 
@@ -29,6 +36,11 @@ export const updateGame = (game) => ({
 export const joinGame = (game) => ({
     type: JOIN_GAME,
     payload: game
+})
+
+export const addComment = (com) => ({
+    type: ADD_COMMENT,
+    payload: com
 })
 
 export const leaveGame = (game) => ({
