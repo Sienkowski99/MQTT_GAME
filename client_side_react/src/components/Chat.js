@@ -28,6 +28,7 @@ const Chat = (props) => {
     const [isSub, setIsSub] = useState(false);
     const [connectStatus, setConnectStatus] = useState(null)
     const [chat, setChat] = useState([])
+    const [chatReverse, setChatReverse] = useState([])
 
     useEffect(()=>{
         mqttConnect('ws://10.45.3.171:8000/mqtt')
@@ -102,6 +103,9 @@ const Chat = (props) => {
         }
       }, [client]);
 
+    useEffect(()=>{
+      setChatReverse(chat.reverse())
+    }, [chat])
     return (
         <div>
             <h2>Chat 🥇</h2>
@@ -111,7 +115,7 @@ const Chat = (props) => {
                         {/* <Card.Title>Chat 🥇</Card.Title> */}
                         <Card.Subtitle className="mb-2 text-muted">Chat ID: {currentChat}</Card.Subtitle>
                         <div style={{height: "50vh", overflowY: "scroll", background: "gray", display: "flex", flexDirection: "column-reverse"}}>
-                            {chat.reverse().map(msg=><div style={{background: "none"}}><p>{msg.author}: {msg.content}</p></div>)}
+                            {chatReverse.map((msg, index)=><div style={{background: "none"}} key={index}><p>{msg.author}: {msg.content}</p></div>)}
                         </div>
                         <form onSubmit={(e)=>{handleSendMessage(e)}}>
                             <p>Message</p>

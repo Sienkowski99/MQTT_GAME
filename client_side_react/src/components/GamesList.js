@@ -2,24 +2,43 @@ import { connect } from "react-redux";
 import operations from '../operations/index'
 import { useEffect, useState } from 'react';
 import CreateGame from './CreateGame'
+import { Card } from 'react-bootstrap'
 const {v4: uuidv4} = require('uuid')
 const mqtt = require('mqtt')
+
 
 const GamesList = (props) => {
 
     const delay = 1000
     // console.log(props.currentGame)
     //componentDidMount
-    useEffect(()=>{
-    setInterval(()=>{
-        props.updateList()
-    }, delay)
-    }, [])
+    // useEffect(()=>{
+    // setInterval(()=>{
+    //     props.updateList()
+    // }, delay)
+    // }, [])
 
+    const [gamesList, setGamesList] = useState([])
     const [client, setClient] = useState(null);
     useEffect(()=>{
+        console.log("RERENDER")
         mqttConnect('ws://10.45.3.171:8000/mqtt')
     }, [])
+    
+    useEffect(()=>{
+        // setGamesList(props.list)
+        
+        if (props.list.length) {
+            // console.log(props.list)
+            props.setGame(props.list.filter(game=>game.playersIDs.includes(login))[0])
+            // console.log(login)
+            // console.log(props.list.filter(game=>game.playersIDs.includes(login)))
+        } else {
+            props.leaveGame()
+        }
+        
+    }, [props.list])
+
     
     const mqttConnect = (host) => {
         setClient(mqtt.connect(host));
@@ -74,9 +93,10 @@ const GamesList = (props) => {
           });
           client.on('message', (topic, message) => {
             const payload = { topic, message: message.toString() };
-            console.log(payload)
-            if (topic === "/chat/general") {
-
+            // console.log(payload)
+            if (topic === "games_list") {
+                // setGamesList([...JSON.parse(message.toString()).games])
+                props.updateList(JSON.parse(message.toString()).games)
                 // console.log(chat)
             }
             // setPayload(payload);
@@ -88,18 +108,20 @@ const GamesList = (props) => {
         props.watchGame(id)
     }
 
-    const [login, setLogin] = useState("")
+    const [login, setLogin] = useState(props.player.login)
 
-    useEffect(()=>{
-        setLogin(props.player.login)
-    }, [props])
+    // useEffect(()=>{
+    //     setLogin(props.player.login)
+    // }, [props])
 
     const handleJoin = (id) => {
-        props.joinGame(id, login)
+        // props.joinGame(id, login)
+        mqttPublish({topic: "join_game", payload: JSON.stringify({name: login, id: id})})
     }
 
     const handleLeave = (id) => {
-        props.leaveGame(id, login)
+        // props.leaveGame(id, login)
+        mqttPublish({topic: "leave_game", payload: JSON.stringify({name: login, id: id})})
     }
 
     const gameID = (id) => {
@@ -162,21 +184,27 @@ const GamesList = (props) => {
     return (
         <div>
             <h2>GamesList 🏆</h2>
-            {/* <div style={{display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center", marginBottom: "5px"}}>
-                <label>Type in your username </label>
-                <input type="text" onChange={(e)=>setLogin(e.target.value)} style={{margin: "5px 0"}}/>
-            </div> */}
-            {props.list.map(game => 
-                <div style={{display: "flex", flexDirection: "column", border: "solid white 2px", padding: "10px", marginBottom: "5px"}}>
-                    {gameID(game.id)}
-                    {/* {props.game ? {props.game.game.id === game.id ? <p style={{color: "blue"}}>{game.id}</p> : <p>{game.id}</p>} : null} */}
-                    <p style={{margin: "5px"}}>Players: {game.players}/2</p>
-                    <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", margin: "5px 0"}}>
-                        {drawButtons(game)}
-                    </div>
-                </div>
-            )}
-            <CreateGame/>
+            <Card>
+                <Card.Body>
+                    
+                    {/* <Card.Subtitle>GamesList 🏆</Card.Subtitle> */}
+                    {/* <div style={{display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center", marginBottom: "5px"}}>
+                        <label>Type in your username </label>
+                        <input type="text" onChange={(e)=>setLogin(e.target.value)} style={{margin: "5px 0"}}/>
+                    </div> */}
+                    {props.list.map((game, index) => 
+                        <div key={index} style={{display: "flex", flexDirection: "column", border: "solid white 2px", padding: "10px", marginBottom: "5px"}}>
+                            {gameID(game.id)}
+                            {/* {props.game ? {props.game.game.id === game.id ? <p style={{color: "blue"}}>{game.id}</p> : <p>{game.id}</p>} : null} */}
+                            <p style={{margin: "5px"}}>Players: {game.players}/2</p>
+                            <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", margin: "5px 0"}}>
+                                {drawButtons(game)}
+                            </div>
+                        </div>
+                    )}
+                    <CreateGame/>
+                </Card.Body>
+            </Card>
         </div>
     )
 }
@@ -191,10 +219,11 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateList: () => dispatch(operations.update_games_list()),
+        updateList: (list) => dispatch(operations.update_games_list(list)),
         watchGame: (id) => dispatch(operations.watch_game(id)),
         joinGame: (id, login) => dispatch(operations.join_game(id, login)),
-        leaveGame: (id, login) => dispatch(operations.leave_game(id, login))
+        leaveGame: (id, login) => dispatch(operations.leave_game(id, login)),
+        setGame: (game) => dispatch(operations.set_game(game))
     }
 }
 

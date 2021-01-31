@@ -16,16 +16,16 @@ const client  = mqtt.connect('mqtt://10.45.3.171/'
 )
 
 client.on('connect', function () {
-    client.subscribe('games_list', function (err) {
-        if (err) {
-            console.log('error' + err)
-        }
-    })
-    client.subscribe('/chat/general', function (err) {
-        if (err) {
-            console.log('error' + err)
-        }
-    })
+    // client.subscribe('games_list', function (err) {
+    //     if (err) {
+    //         console.log('error' + err)
+    //     }
+    // })
+    // client.subscribe('/chat/general', function (err) {
+    //     if (err) {
+    //         console.log('error' + err)
+    //     }
+    // })
     // const payload = {
     //     game_id: 1,
     //     players: ["abc", "def"],
@@ -33,6 +33,8 @@ client.on('connect', function () {
     //         elo: "eluwina"
     //     }
     // }
+    console.log("connected")
+    client.publish("/game/0c6850f1-a240-4710-9c34-ac9a4edc0266", "eluwina")
     // setTimeout(()=>{client.publish("games", JSON.stringify(payload))}, 5000)
 })
 

@@ -1,5 +1,5 @@
 const chatReducer = (state = [], action) => {
-    console.log(action.type)
+    // console.log(action.type)
     switch(action.type) {
         case 'SET_COMMENTS':
             return [...action.payload]

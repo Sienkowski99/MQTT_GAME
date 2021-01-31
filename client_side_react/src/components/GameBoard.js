@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { setGamesList } from "../actions";
 import operations from '../operations'
+import { Card } from 'react-bootstrap'
+const mqtt = require('mqtt')
 
 const GameBoard = (props) => {
 
@@ -16,8 +18,14 @@ const GameBoard = (props) => {
             setBoardState(drawBoard(props.currentGame.game.boardState))
         }
         else if (props.currentGame.state === "playing") {
-            setGameState("Playing !")
-            setBoardState(drawBoard(props.currentGame.game.boardState))
+            // console.log("players" + props.currentGame.game.players)
+            if (props.currentGame.game.players < 2) {
+                setGameState("Waiting for another player to join !")
+                setBoardState("")
+            } else {
+                setGameState(`Playing !\nCurrent move: ${props.currentGame.game.move}`)
+                setBoardState(drawBoard(props.currentGame.game.boardState))
+            }
         }
         else {
             setGameState("")
@@ -36,16 +44,17 @@ const GameBoard = (props) => {
         // } else {
         //     alert("It's not your turn!")
         // }
-        props.move(props.player.login, index, props.currentGame.game.id)
+        // props.move(props.player.login, index, props.currentGame.game.id)
+        mqttPublish({topic: `/game/${props.currentGame.game.id}/move`, payload: JSON.stringify({name: props.player.login, index: index})})
     }
 
     const drawButtons = (index) => {
-        console.log(index)
+        // console.log(index)
         // if (props.currentGame.game.status === "playing") {
         if (props.currentGame.state === "playing") {
             if (props.currentGame.game.status !== "finished") {
                 return (
-                    <button onClick={()=>{handleMove(index)}} style={{marginTop: "5px"}}>☝️</button>
+                    <button onClick={()=>{handleMove(index)}} style={{marginTop: "5px", borderRadius: "50px"}}>☝️</button>
                 )
             }
         } else {
@@ -54,20 +63,85 @@ const GameBoard = (props) => {
         
     }
 
+    const [client, setClient] = useState(null);
+    useEffect(()=>{
+        console.log("RERENDER")
+        mqttConnect('ws://10.45.3.171:8000/mqtt')
+    }, [])
+
+    
+    const mqttConnect = (host) => {
+        setClient(mqtt.connect(host));
+    };
+
+    const mqttSub = (topic) => {
+        if (client) {
+          client.subscribe(topic, (error) => {
+            if (error) {
+              console.log('Subscribe to topics error', error)
+              return
+            }
+          });
+        }
+      };
+
+    const mqttUnSub = (subscription) => {
+        if (client) {
+          const { topic } = subscription;
+          client.unsubscribe(topic, error => {
+            if (error) {
+              console.log('Unsubscribe error', error)
+              return
+            }
+          });
+        }
+      };
+
+    const mqttPublish = (context) => {
+    if (client) {
+        const { topic, payload } = context;
+        client.publish(topic, payload, error => {
+        if (error) {
+            console.log('Publish error: ', error);
+        }
+        });
+    }
+    }
+
+    useEffect(() => {
+        if (client) {
+          console.log(client)
+          client.on('connect', () => {
+            console.log('Connected')
+          });
+          client.on('error', (err) => {
+            console.error('Connection error: ', err);
+            client.end();
+          });
+          client.on('reconnect', () => {
+          });
+          client.on('message', (topic, message) => {
+            const payload = { topic, message: message.toString() };
+            // console.log(payload)
+            // setPayload(payload);
+          });
+        }
+      }, [client]);
+
     const drawBoard = (board) => {
         return (
             <div style={{display: "flex", flexDirection: "row"}}>
-                {board.map(column => <div style={{display: "flex", flexDirection: "column-reverse"}} onClick={()=>{console.log("siemka")}}>
+                {board.map((column, index) => <div key={index} style={{display: "flex", flexDirection: "column-reverse"}} onClick={()=>{console.log("siemka")}}>
                     {drawButtons(board.indexOf(column))}
-                    {column.map(elem => {
+                    {column.map((elem, index) => {
                         if (elem.length) {
                             if (elem[0] === "o") {
-                                return <div>🔴</div>
+                                return <div key={index}>🔴</div>
                             } else {
-                                return <div>🟡</div>
+                                return <div key={index}>🟡</div>
                             }
                         } else {
-                            return <div>🔵</div>
+                            return <div key={index}>🔵</div>
                         }})}
                 </div>)}
             </div>
@@ -77,9 +151,13 @@ const GameBoard = (props) => {
     return (
         <div>
             <h2>Game Board 📜</h2>
-            <p>{gameState}</p>
-            {/* {props.currentGame ? drawBoard(props.currentGame.boardState) : null} */}
-            {boardState}
+            <Card>
+                <Card.Body>
+                    <Card.Subtitle style={{marginBottom: "3px"}}>{gameState}</Card.Subtitle>
+                    {/* {props.currentGame ? drawBoard(props.currentGame.boardState) : null} */}
+                    {boardState}
+                </Card.Body>
+            </Card>
         </div>
     )
 }

@@ -3,14 +3,23 @@ import {setGamesList, watchGame, joinGame, leaveGame, logIN, updateGame, set_com
 
 const delay = 1000
 
-const update_games_list = () => async dispatch => {
-    const new_list = await axios.get("http://localhost:8080/games_list")
-    .then(result => {
-        // console.log(result);
-        return result.data
-    })
-    .catch(err => {console.log(err)})
-    dispatch(setGamesList(new_list))
+const update_games_list = (newList) => async dispatch => {
+    // const new_list = await axios.get("http://localhost:8080/games_list")
+    // .then(result => {
+    //     // console.log(result);
+    //     return result.data
+    // })
+    // .catch(err => {console.log(err)})
+    // console.log("UPDATE")
+    dispatch(setGamesList(newList))
+}
+const set_game = (game) => async dispatch => {
+    if (game) {
+        dispatch(joinGame(game))
+    } else {
+        dispatch(leaveGame(game))
+    }
+    
 }
 
 const watch_game = (id) => async dispatch => {
@@ -56,13 +65,13 @@ const create_game = () => async dispatch => {
 }
 
 const leave_game = (id, login) => async dispatch => {
-    const game = await axios.post(`http://localhost:8080/leave_game/${id}`, {name: login})
-    .then(result => {
-        console.log(result);
-        return result.data
-    })
-    .catch(err => {console.log(err)})
-    dispatch(leaveGame(game))
+    // const game = await axios.post(`http://localhost:8080/leave_game/${id}`, {name: login})
+    // .then(result => {
+    //     console.log(result);
+    //     return result.data
+    // })
+    // .catch(err => {console.log(err)})
+    dispatch(leaveGame({}))
 }
 
 const login = (log) => async dispatch => {
@@ -113,7 +122,8 @@ const operations = {
     login,
     move,
     send_message,
-    turnOnChat
+    turnOnChat,
+    set_game
 }
   
 export default operations
