@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import operations from '../operations/index'
 import { useEffect, useState } from 'react';
 import CreateGame from './CreateGame'
-import { Card } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 const {v4: uuidv4} = require('uuid')
 const mqtt = require('mqtt')
 
@@ -140,22 +140,22 @@ const GamesList = (props) => {
     const drawButtons = (game) => {
         if (props.currentGame.game) {
             if (props.currentGame.game.playersIDs.includes(login) && props.currentGame.game.id === game.id) {
-                return (<button onClick={()=>handleLeave(game.id)}>Leave</button>)
+                return (<Button onClick={()=>handleLeave(game.id)} variant="danger">Leave</Button>)
             } else {
                 if (props.currentGame.state === "playing") {
                 } else {
                     if (game.players >= 2) {
                         return (
                             <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", margin: "5px 0"}}>
-                            <button onClick={()=>handleWatch(game.id)}>Watch</button>
+                            <Button onClick={()=>handleWatch(game.id)} variant="secondary">Watch</Button>
                         </div>
                         )
                     }
                     else {
                         return (
                             <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", margin: "5px 0"}}>
-                                <button onClick={()=>handleJoin(game.id)}>Join</button>
-                                <button onClick={()=>handleWatch(game.id)}>Watch</button>
+                                <Button onClick={()=>handleJoin(game.id)} variant="primary">Join</Button>
+                                <Button onClick={()=>handleWatch(game.id)} variant="secondary">Watch</Button>
                             </div>
                         )
                     }
@@ -166,15 +166,15 @@ const GamesList = (props) => {
             if (game.players >= 2) {
                 return (
                     <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", margin: "5px 0"}}>
-                    <button onClick={()=>handleWatch(game.id)}>Watch</button>
+                    <Button onClick={()=>handleWatch(game.id)} variant="secondary">Watch</Button>
                 </div>
                 )
             }
             else {
                 return (
                     <div style={{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-around", margin: "5px 0"}}>
-                        <button onClick={()=>handleJoin(game.id)}>Join</button>
-                        <button onClick={()=>handleWatch(game.id)}>Watch</button>
+                        <Button onClick={()=>handleJoin(game.id)} variant="primary">Join</Button>
+                        <Button onClick={()=>handleWatch(game.id)} variant="secondary">Watch</Button>
                     </div>
                 )
             }
@@ -182,10 +182,10 @@ const GamesList = (props) => {
     }
 
     return (
-        <div>
-            <h2>GamesList 🏆</h2>
+        <div style={{width: "30%"}}>
+            <h2>Games List 🏆</h2>
             <Card>
-                <Card.Body>
+                <Card.Body style={{height: "60vh", overflowY: "scroll", background: "#3b424f", display: "flex", flexDirection: "column"}}>
                     
                     {/* <Card.Subtitle>GamesList 🏆</Card.Subtitle> */}
                     {/* <div style={{display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center", marginBottom: "5px"}}>
@@ -193,7 +193,7 @@ const GamesList = (props) => {
                         <input type="text" onChange={(e)=>setLogin(e.target.value)} style={{margin: "5px 0"}}/>
                     </div> */}
                     {props.list.map((game, index) => 
-                        <div key={index} style={{display: "flex", flexDirection: "column", border: "solid white 2px", padding: "10px", marginBottom: "5px"}}>
+                        <div key={index} style={{display: "flex", flexDirection: "column", border: "solid white 3px", padding: "5px", marginBottom: "15px", borderRadius: "10px"}}>
                             {gameID(game.id)}
                             {/* {props.game ? {props.game.game.id === game.id ? <p style={{color: "blue"}}>{game.id}</p> : <p>{game.id}</p>} : null} */}
                             <p style={{margin: "5px"}}>Players: {game.players}/2</p>

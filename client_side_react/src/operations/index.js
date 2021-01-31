@@ -27,9 +27,9 @@ const set_game = (game) => async (dispatch, state) => {
     
 }
 
-const add_comment = (obj) => async (dispatch) => {
+const add_comment = (obj) => async (dispatch, state) => {
     console.log(obj)
-    dispatch(addComment(obj))
+    dispatch(addComment({...obj, id: state().chat.length}))
 }
 
 const watch_game = (id) => async dispatch => {

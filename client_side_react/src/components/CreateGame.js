@@ -1,6 +1,7 @@
 import { connect } from "react-redux";
 import operations from '../operations/index'
 import { useEffect, useState } from 'react';
+import { Button } from 'react-bootstrap'
 const mqtt = require('mqtt')
 
 const CreateGame = (props) => {
@@ -75,10 +76,10 @@ const CreateGame = (props) => {
       }, [client]);
 
     return (
-        <div>
-            <button onClick={()=>{
+        <div style={{background: "none"}}>
+            <Button onClick={()=>{
                 mqttPublish({topic: "new_game", payload: "new"})
-            }} style={{marginBottom: "10px"}}>Create Game</button>
+            }} variant="light">Create Game</Button>
         </div>
     )
 }

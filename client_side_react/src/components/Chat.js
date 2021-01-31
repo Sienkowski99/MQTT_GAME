@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import operations from '../operations'
 import { Card } from 'react-bootstrap'
 import currentGameReducer from '../reducers/currentGame';
+import { Button } from 'react-bootstrap'
 
 const mqtt = require('mqtt')
 // const cl= mqtt.connect('mqtt://10.45.3.171/')
@@ -130,23 +131,29 @@ const Chat = (props) => {
 
     useEffect(()=>{
       console.log(props.chat)
-      setChatReverse(props.chat.reverse())
+      setChatReverse(props.chat.sort((a,b)=> a.id > b.id ? 1 : -1).reverse())
+      console.log(chatReverse)
     }, [props.chat])
+
+    function resetForm() {
+      document.getElementById("form").reset();
+    }
+
     return (
-        <div>
+        <div style={{width: "30%"}}>
             <h2>Chat 🥇</h2>
             <div>
                 <Card>
                     <Card.Body>
                         {/* <Card.Title>Chat 🥇</Card.Title> */}
                         <Card.Subtitle className="mb-2 text-muted">Chat ID: {currentChat}</Card.Subtitle>
-                        <div style={{height: "50vh", overflowY: "scroll", background: "gray", display: "flex", flexDirection: "column-reverse"}}>
-                            {chatReverse.map((msg, index)=><div style={{background: "none"}} key={index}><p>{msg.author}: {msg.content}</p></div>)}
+                        <div style={{height: "50vh", overflowY: "scroll", background: "#3b424f", display: "flex", flexDirection: "column-reverse"}}>
+                            {chatReverse.map((msg, index)=><div style={{background: "none", display: "flex", justifyContent: "flex-start", padding: "0 8px", flexWrap: "wrap", textAlign: "start"}} key={index}><p style={{color: "#007BFF", paddingRight: "5px", textShadow: "2px 2px black"}}>{msg.author}:</p><p>{msg.content}</p></div>)}
                         </div>
-                        <form onSubmit={(e)=>{handleSendMessage(e)}}>
-                            <p>Message</p>
-                            <input type="text" onChange={(e)=>setMessage(e.target.value)}/>
-                            <button type="submit">Send</button>
+                        <form onSubmit={(e)=>{handleSendMessage(e); resetForm()}} id="form" style={{width: "100%", display: "flex", justifyContent: "space-between"}}>
+                            {/* <p>Message</p> */}
+                            <input type="text" onChange={(e)=>setMessage(e.target.value)} style={{flexGrow: "1", width: "10px"}}/>
+                            <Button type="submit" style={{borderRadius: "0px"}}>Send</Button> 
                         </form>
                     </Card.Body>
                 </Card>

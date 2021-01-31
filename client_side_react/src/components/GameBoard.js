@@ -130,7 +130,7 @@ const GameBoard = (props) => {
 
     const drawBoard = (board) => {
         return (
-            <div style={{display: "flex", flexDirection: "row"}}>
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
                 {board.map((column, index) => <div key={index} style={{display: "flex", flexDirection: "column-reverse"}} onClick={()=>{console.log("siemka")}}>
                     {drawButtons(board.indexOf(column))}
                     {column.map((elem, index) => {
@@ -149,7 +149,7 @@ const GameBoard = (props) => {
     }
 
     return (
-        <div>
+        <div style={{width: "30%"}}>
             <h2>Game Board 📜</h2>
             <Card>
                 <Card.Body>
