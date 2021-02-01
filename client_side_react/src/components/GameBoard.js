@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { setGamesList } from "../actions";
 import operations from '../operations'
-import { Card } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 const mqtt = require('mqtt')
 
 const GameBoard = (props) => {
@@ -23,7 +23,7 @@ const GameBoard = (props) => {
                 setGameState("Waiting for another player to join !")
                 setBoardState("")
             } else {
-                setGameState(`Playing !\nCurrent move: ${props.currentGame.game.move}`)
+                setGameState(`Playing !`)
                 setBoardState(drawBoard(props.currentGame.game.boardState))
             }
         }
@@ -54,7 +54,7 @@ const GameBoard = (props) => {
         if (props.currentGame.state === "playing") {
             if (props.currentGame.game.status !== "finished") {
                 return (
-                    <button onClick={()=>{handleMove(index)}} style={{marginTop: "5px", borderRadius: "50px"}}>☝️</button>
+                    <Button variant="secondary" onClick={()=>{handleMove(index)}} style={{marginTop: "5px", borderRadius: "1000px", border: "solid black 2px"}}>{index+1}</Button>
                 )
             }
         } else {
@@ -130,8 +130,8 @@ const GameBoard = (props) => {
 
     const drawBoard = (board) => {
         return (
-            <div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
-                {board.map((column, index) => <div key={index} style={{display: "flex", flexDirection: "column-reverse"}} onClick={()=>{console.log("siemka")}}>
+            <div style={{display: "inline-flex", flexDirection: "row", justifyContent: "center", padding: "10px", borderRadius: "20px", border: "solid black 2px", marginBottom: "20px"}}>
+                {board.map((column, index) => <div key={index} style={{display: "flex", flexDirection: "column-reverse", padding: "5px"}} onClick={()=>{console.log("siemka")}}>
                     {drawButtons(board.indexOf(column))}
                     {column.map((elem, index) => {
                         if (elem.length) {
@@ -153,15 +153,26 @@ const GameBoard = (props) => {
             <h2 style={{marginBottom: "20px"}}>Game Board 📜</h2>
             {props.currentGame.game ? <Card>
                 <Card.Body style={{backgroundColor: "#3b424f"}}>
-                    <Card.Title style={{marginBottom: "3px", background: "none"}}>{gameState}</Card.Title>
+                    <Card.Title style={{marginBottom: "20px", background: "none"}}>{gameState}</Card.Title>
                     {/* {props.currentGame ? drawBoard(props.currentGame.boardState) : null} */}
                     {boardState}
+                    {props.currentGame.game.move === null ? null : 
+                    // props.currentGame.game.move === props.player.login ? <Card.Title className="w3-animate-left" style={{background: "none"}}>{props.player.login === props.currentGame.game.players[0] ? : }Your turn!</Card.Title> : <Card.Title className="w3-animate-left" style={{background: "none"}}>{props.currentGame.game.move}'s turn</Card.Title>
+                    <Card.Title className="w3-animate-top" style={{background: "none"}}>
+                        {props.currentGame.game.move === props.currentGame.game.playersIDs[0] ? "🔴 " : "🟡 "}
+                        {props.currentGame.game.move === props.player.login ? "Your turn!" : `${props.currentGame.game.move}'s turn`}
+                    </Card.Title>
+                    }
                 </Card.Body>
             </Card> : <h3 style={{margin: "100px 0"}}>You have to choose the lobby</h3>}
         </div>
     )
 }
-
+// if (elem[0] === "o") {
+//     return <div key={index}>🔴</div>
+// } else {
+//     return <div key={index}>🟡</div>
+// }
 
 function mapStateToProps(state) {
     return {

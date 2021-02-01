@@ -26,6 +26,7 @@ class Game {
         this.status = "waiting for players"
         this.move = null
         this.msg = "Waiting for players..."
+        this.watching = []
     }
 }
 
@@ -139,6 +140,11 @@ client.on('connect', function () {
             console.log('error' + err)
         }
     })
+    client.subscribe('watch_game', function (err) {
+        if (err) {
+            console.log('error' + err)
+        }
+    })
 })
 
 client.on('message', function (topic, message) {
@@ -160,6 +166,24 @@ client.on('message', function (topic, message) {
     }
     if (topic === "make_move") {
         console.log(JSON.parse(x))
+    }
+    if (topic === "watch_game") {
+        const req = JSON.parse(x)
+        console.log(req)
+        // console.log(games_list)
+        const obj = games_list.games.filter(game => game.id === req.id)[0]
+        // if (obj.players < 2) {
+        //     if (!obj.playersIDs.includes(req.name)) {
+        //         obj.playersIDs.push(req.name)
+        //         obj.players += 1
+        //     }
+        // }
+        // if (obj.players >= 2 && obj.status !== "finished") {
+        //     obj.move = obj.playersIDs[0]
+        //     obj.status = "playing"
+        // }
+        // console.log(games_list)
+        obj.watching.push(req.name)
     }
     if (topic === "join_game") {
         const req = JSON.parse(x)
@@ -185,6 +209,9 @@ client.on('message', function (topic, message) {
         if (obj.playersIDs.includes(req.name)) {
             obj.playersIDs = obj.playersIDs.filter(id => {if (req.name !== id) {return true}})
             obj.players -= 1
+        }
+        if (obj.watching.includes(req.name)) {
+            obj.watching = obj.watching.filter(user=> user !== req.name)
         }
         if (obj.players <= 0 && obj.status === "finished") {
             games_list.games = games_list.games.filter(game => game.id !== req.id)

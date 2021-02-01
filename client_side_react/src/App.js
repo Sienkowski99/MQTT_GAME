@@ -99,7 +99,7 @@ function App(props) {
       )
     } else {
       return (
-        <div style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+        <div style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}} className={"w3-animate-right"}>
           <form onSubmit={()=>{handleLogin(); resetForm()}} id="form" style={{display: "flex", flexDirection: "column"}}>
             <p>Enter your nickname: </p>
             <input type="text" onChange={(e)=>setLogin(e.target.value)} style={{marginBottom: "15px"}}/>
@@ -115,7 +115,7 @@ function App(props) {
 
   return (
     <div className="App App-header">
-      <Navbar bg="dark" variant="dark"  style={{display: "flex", justifyContent: "space-between", padding: "0 30px", width: "100%", alignItems: "center"}}>
+      <Navbar bg="dark" variant="dark" style={{display: "flex", justifyContent: "space-between", padding: "0 30px", width: "100%", alignItems: "center"}}>
         <Navbar.Brand href="">
           {/* <img
             alt=""

@@ -32,16 +32,26 @@ const add_comment = (obj) => async (dispatch, state) => {
     dispatch(addComment({...obj, id: state().chat.length}))
 }
 
-const watch_game = (id) => async dispatch => {
-    setInterval(async ()=>{
-        const game = await axios.get(`http://localhost:8080/game/${id}`)
-        .then(result => {
-        console.log(result);
-        return result.data
-    })
-    .catch(err => {console.log(err)})
-    dispatch(watchGame(game))
-    }, delay) 
+const watch_game = (game) => async (dispatch,state) => {
+    // setInterval(async ()=>{
+    //     const game = await axios.get(`http://localhost:8080/game/${id}`)
+    //     .then(result => {
+    //     console.log(result);
+    //     return result.data
+    // })
+    // .catch(err => {console.log(err)})
+    // dispatch(watchGame(game))
+    // }, delay) 
+    const prev_chat = state().data.chat
+    if (game) {
+        // dispatch(set_comments([]))
+        dispatch(watchGame(game))
+        dispatch(set_data({chat: game.id, prev_chat: prev_chat}))
+    } else {
+        // dispatch(set_comments([]))
+        dispatch(leaveGame(game))
+        dispatch(set_data({chat: "general", prev_chat: prev_chat}))
+    }
 }
 
 const join_game = (id, login) => async dispatch => {

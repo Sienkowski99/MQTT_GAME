@@ -30,7 +30,14 @@ const GamesList = (props) => {
         
         if (props.list.length) {
             // console.log(props.list)
-            props.setGame(props.list.filter(game=>game.playersIDs.includes(login))[0])
+            if (props.list.filter(game=>game.playersIDs.includes(login)).length) {
+                props.setGame(props.list.filter(game=>game.playersIDs.includes(login))[0])
+            } else if (props.list.filter(game=>game.watching.includes(login)).length) {
+                props.watchGame(props.list.filter(game=>game.watching.includes(login))[0])
+            } else {
+                props.leaveGame()
+            }
+            // props.setGame(props.list.filter(game=>game.playersIDs.includes(login) || game.watching.includes(login))[0])
             // console.log(login)
             // console.log(props.list.filter(game=>game.playersIDs.includes(login)))
         } else {
@@ -105,7 +112,8 @@ const GamesList = (props) => {
       }, [client]);
 
     const handleWatch = (id) => {
-        props.watchGame(id)
+        // props.watchGame(id)
+        mqttPublish({topic: "watch_game", payload: JSON.stringify({name: login, id: id})})
     }
 
     const [login, setLogin] = useState(props.player.login)
@@ -139,10 +147,13 @@ const GamesList = (props) => {
 
     const drawButtons = (game) => {
         if (props.currentGame.game) {
-            if (props.currentGame.game.playersIDs.includes(login) && props.currentGame.game.id === game.id) {
+            if ((props.currentGame.game.playersIDs.includes(login) || props.currentGame.game.watching.includes(login))&& props.currentGame.game.id === game.id) {
                 return (<Button onClick={()=>handleLeave(game.id)} variant="danger">Leave</Button>)
             } else {
                 if (props.currentGame.state === "playing") {
+                    return
+                } else if (props.currentGame.state === "watching") {
+                    return
                 } else {
                     if (game.players >= 2) {
                         return (
@@ -220,7 +231,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateList: (list) => dispatch(operations.update_games_list(list)),
-        watchGame: (id) => dispatch(operations.watch_game(id)),
+        watchGame: (game) => dispatch(operations.watch_game(game)),
         joinGame: (id, login) => dispatch(operations.join_game(id, login)),
         leaveGame: (id, login) => dispatch(operations.leave_game(id, login)),
         setGame: (game) => dispatch(operations.set_game(game))
