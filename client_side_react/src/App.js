@@ -10,7 +10,7 @@ import axios from 'axios'
 import { useEffect, useState } from "react";
 import mqtt from 'mqtt'
 const {v4: uuidv4} = require('uuid')
-
+const api_url = "http://51.178.2.86:8080/"
 function App(props) {
   const [client, setClient] = useState(null);
   const [online, setOnline] = useState(0);
@@ -63,16 +63,16 @@ function App(props) {
   const [login, setLogin] = useState("")
 
   const handleLogin = (e) => {
-    e.preventDefault()
+    // e.preventDefault()
     console.log(login)
-    axios.post("http://localhost:8080/verify_login", {login: login})
+    axios.post(`${api_url}verify_login`, {login: login})
     .then(result=>{
       console.log(result)
       if (result.data === "OK") {
         props.login(login)
         const my_uuid = uuidv4()
         setInterval(()=>{
-          axios.post("http://localhost:8080/presence", {login: login, id: my_uuid})
+          axios.post(`${api_url}presence`, {login: login, id: my_uuid})
           .then(result=>console.log(result))
           .catch(err=>console.log(err))
         }, 1000)
@@ -104,7 +104,7 @@ function App(props) {
           <form onSubmit={(e)=>{handleLogin(e); resetForm()}} id="form" style={{display: "flex", flexDirection: "column"}}>
             <p>Enter your nickname: </p>
             <input type="text" onChange={(e)=>setLogin(e.target.value)} style={{marginBottom: "15px"}}/>
-            <Button variant="light">ENTER</Button>
+            <Button onClick={(e)=>{handleLogin(e)}} variant="light">ENTER</Button>
           </form>
         </div>
       )
