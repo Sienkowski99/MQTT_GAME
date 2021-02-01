@@ -84,13 +84,15 @@ const create_game = () => async dispatch => {
     dispatch(setGamesList(new_list))
 }
 
-const leave_game = (id, login) => async dispatch => {
+const leave_game = (id, login) => async (dispatch,state) => {
     // const game = await axios.post(`http://localhost:8080/leave_game/${id}`, {name: login})
     // .then(result => {
     //     console.log(result);
     //     return result.data
     // })
     // .catch(err => {console.log(err)})
+    const prev_chat = state().data.chat
+    dispatch(set_data({chat: "general", prev_chat: prev_chat}))
     dispatch(leaveGame({}))
 }
 

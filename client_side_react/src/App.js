@@ -62,7 +62,8 @@ function App(props) {
 
   const [login, setLogin] = useState("")
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault()
     console.log(login)
     axios.post("http://localhost:8080/verify_login", {login: login})
     .then(result=>{
@@ -100,10 +101,10 @@ function App(props) {
     } else {
       return (
         <div style={{width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}} className={"w3-animate-right"}>
-          <form onSubmit={()=>{handleLogin(); resetForm()}} id="form" style={{display: "flex", flexDirection: "column"}}>
+          <form onSubmit={(e)=>{handleLogin(e); resetForm()}} id="form" style={{display: "flex", flexDirection: "column"}}>
             <p>Enter your nickname: </p>
             <input type="text" onChange={(e)=>setLogin(e.target.value)} style={{marginBottom: "15px"}}/>
-            <Button onClick={()=>handleLogin()} variant="light">ENTER</Button>
+            <Button variant="light">ENTER</Button>
           </form>
         </div>
       )
@@ -114,7 +115,7 @@ function App(props) {
   }
 
   return (
-    <div className="App App-header">
+    <div className="App App-header" id="main">
       <Navbar bg="dark" variant="dark" style={{display: "flex", justifyContent: "space-between", padding: "0 30px", width: "100%", alignItems: "center"}}>
         <Navbar.Brand href="">
           {/* <img

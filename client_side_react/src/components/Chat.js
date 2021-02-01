@@ -36,6 +36,9 @@ const Chat = (props) => {
     const [message, setMessage] = useState("")
     const handleSendMessage = (e) => {
         e.preventDefault()
+        if (message === "!roll") {
+          document.getElementById("main").classList.add("w3-spin");
+        }
         console.log("sending: "+message+"to: "+currentChat)
         mqttPublish({topic: `/chat/${currentChat}`, payload: JSON.stringify({author: props.player.login, message: message})})
     }
