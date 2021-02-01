@@ -68,6 +68,30 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+let sessions = []
+
+app.post('/presence', (req, res) => {
+    // console.log(req.body)
+    // let session = sessions.filter(ses=>ses.login === req.body.login)[0]
+    // session.time += 1
+    sessions = sessions.map(ses=> {if(ses.login===req.body.login){return {...ses, time: ses.time+1}}else{return ses}})
+    res.send('OK')
+})  
+
+app.post('/verify_login', (req, res) => {
+    // console.log(req.body)
+    if (sessions.filter(session => session.login === req.body.login).length) {
+        res.send("Name already in use!")
+    } 
+    else if (req.body.login === "" || req.body.login === undefined || req.body.login === null) {
+        res.send("Name cannot be empty!")
+    }
+    else {
+        sessions.push({login: req.body.login, time: 10})
+        res.send('OK')
+    }
+})
+
 const mqtt = require('mqtt')
 // const { default: GamesList } = require('../client_side_react/src/components/GamesList')
 const client  = mqtt.connect('mqtt://10.45.3.171/')
@@ -75,6 +99,14 @@ const client  = mqtt.connect('mqtt://10.45.3.171/')
 let games_list = {
     games: []
 }
+
+setInterval(()=>{
+    sessions = sessions.map(ses=>{return {...ses, time: ses.time-1}})
+    sessions = sessions.filter(ses=>ses.time>= 1)
+    console.log(sessions)
+    // console.log(games_list)
+    client.publish("players_online", JSON.stringify(sessions.length))
+},1000)
 
 setInterval(()=>{
     // console.log(games_list)

@@ -150,14 +150,14 @@ const GameBoard = (props) => {
 
     return (
         <div style={{width: "30%"}}>
-            <h2>Game Board 📜</h2>
-            <Card>
-                <Card.Body>
-                    <Card.Subtitle style={{marginBottom: "3px"}}>{gameState}</Card.Subtitle>
+            <h2 style={{marginBottom: "20px"}}>Game Board 📜</h2>
+            {props.currentGame.game ? <Card>
+                <Card.Body style={{backgroundColor: "#3b424f"}}>
+                    <Card.Title style={{marginBottom: "3px", background: "none"}}>{gameState}</Card.Title>
                     {/* {props.currentGame ? drawBoard(props.currentGame.boardState) : null} */}
                     {boardState}
                 </Card.Body>
-            </Card>
+            </Card> : <h3 style={{margin: "100px 0"}}>You have to choose the lobby</h3>}
         </div>
     )
 }

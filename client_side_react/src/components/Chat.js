@@ -141,14 +141,14 @@ const Chat = (props) => {
 
     return (
         <div style={{width: "30%"}}>
-            <h2>Chat 🥇</h2>
+            <h2 style={{marginBottom: "20px"}}>Chat 🥇</h2>
             <div>
                 <Card>
-                    <Card.Body>
+                    <Card.Body style={{background: "#3b424f"}}>
                         {/* <Card.Title>Chat 🥇</Card.Title> */}
-                        <Card.Subtitle className="mb-2 text-muted">Chat ID: {currentChat}</Card.Subtitle>
-                        <div style={{height: "50vh", overflowY: "scroll", background: "#3b424f", display: "flex", flexDirection: "column-reverse"}}>
-                            {chatReverse.map((msg, index)=><div style={{background: "none", display: "flex", justifyContent: "flex-start", padding: "0 8px", flexWrap: "wrap", textAlign: "start"}} key={index}><p style={{color: "#007BFF", paddingRight: "5px", textShadow: "2px 2px black"}}>{msg.author}:</p><p>{msg.content}</p></div>)}
+                        <Card.Subtitle className="mb-2 text-muted" style={{background: "none"}}>Chat ID: {currentChat}</Card.Subtitle>
+                        <div style={{height: "60vh", overflowY: "scroll", display: "flex", flexDirection: "column-reverse"}}>
+                            {chatReverse.map((msg, index)=><div style={{background: "none", display: "flex", justifyContent: "flex-start", padding: "0 8px", flexWrap: "wrap", textAlign: "start"}} key={index}><p style={{color: "#007BFF", paddingRight: "5px", textShadow: "1px 1px black", margin: "0"}}>{msg.author}:</p><p>{msg.content}</p></div>)}
                         </div>
                         <form onSubmit={(e)=>{handleSendMessage(e); resetForm()}} id="form" style={{width: "100%", display: "flex", justifyContent: "space-between"}}>
                             {/* <p>Message</p> */}
