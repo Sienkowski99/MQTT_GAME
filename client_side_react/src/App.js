@@ -10,7 +10,8 @@ import axios from 'axios'
 import { useEffect, useState } from "react";
 import mqtt from 'mqtt'
 const {v4: uuidv4} = require('uuid')
-const api_url = "http://51.178.2.86:8080/"
+// const api_url = "http://51.178.2.86:8080/"
+const api_url = "http://10.45.3.106/"
 function App(props) {
   const [client, setClient] = useState(null);
   const [online, setOnline] = useState(0);
